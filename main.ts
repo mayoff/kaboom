@@ -34,6 +34,7 @@ class PlayerPose {
     paddle: Sprite;
     buckets: Sprite[];
     vx: number = 0;
+    vxTarget: number = 0;
 
     constructor() {
         this.paddle = sprites.create(assets.image`paddlePlaceholder`, SpriteKind.Paddle);
@@ -46,10 +47,14 @@ class PlayerPose {
             this.buckets.push(bucket);
             bucket.setPosition(this.paddle.x, this.paddle.y - (i * (bucket.height + 2)) - bucket.height / 2);
         }
+
+        // Reverse the buckets so the lowest bucket gets removed first.
+        this.buckets.reverse();
     }
 
     advance(elapsed: TimeInterval) {
         if (this.buckets.length == 0) { return; }
+        this.vx = (this.vx + this.vxTarget) / 2;
         this.paddle.x = Math.max(
             this.buckets[0].width / 2,
             Math.min(
@@ -135,11 +140,11 @@ class GameState {
     setPlayerVelocityFromController() {
         const speed = controller.A.isPressed() ? GameState.paddleSpeedFast : GameState.paddleSpeedSlow;
         if (controller.left.isPressed()) {
-            this.player.vx = -speed;
+            this.player.vxTarget = -speed;
         } else if (controller.right.isPressed()) {
-            this.player.vx = speed;
+            this.player.vxTarget = speed;
         } else {
-            this.player.vx = 0;
+            this.player.vxTarget = 0;
         }
     }
 
@@ -185,7 +190,7 @@ class GameState {
 
     newBomberTargetX(): number {
         const bWidth = this.bomber.sprite.width;
-        const margin = 3 * bWidth;
+        const margin = 2 * bWidth;
         const proposal = bWidth / 2 + Math.random() * (scene.screenWidth() - bWidth - 2 * margin);
         const adjustment = proposal <= this.bomber.sprite.x ? 0 : 2 * margin;
         return proposal + adjustment;
@@ -319,13 +324,13 @@ class GameState {
 
     static preppingDuration: TimeInterval = 0.5;
     static bomberSpeed: number = 80; // points per second
-    static gravity: number = 100; // points per second per second
-    static bombMaxSpeed: number = 100; // points per second
+    static gravity: number = 200; // points per second per second
+    static bombMaxSpeed: number = 200; // points per second
     static singleExplosionDuration: TimeInterval = 0.3;
     static bombHoldingDuration: TimeInterval = 0.2;
     static reloadingDuration: TimeInterval = 0.2;
-    static paddleSpeedSlow: number = 130;
-    static paddleSpeedFast: number = 250;
+    static paddleSpeedSlow: number = 200;
+    static paddleSpeedFast: number = 300;
     static bombCountForLevel(level: number): number {
         return 5 * (level + 1);
     }
