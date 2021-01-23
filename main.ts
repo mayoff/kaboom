@@ -150,8 +150,6 @@ class GameState {
 
     update(now: AbsoluteTime) {
         const elapsed = now - this.timeUpdated;
-        console.log(elapsed);
-
         this.advancePlayerPose(elapsed);
         this.advanceBomberPosition(elapsed);
         this.advanceBombPoses(elapsed);
