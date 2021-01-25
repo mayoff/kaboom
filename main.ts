@@ -206,15 +206,15 @@ class GameState {
 
         let uncaughtBombs: BombPose[] = [];
         let caughtBombs: BombPose[] = [];
-        bombs:
         for (let bomb of this.phase.bombs) {
+            let isCaught = false;
             for (let bucket of this.player.buckets) {
                 if (bomb.sprite.overlapsWith(bucket)) {
-                    caughtBombs.push(bomb)
-                    continue bombs;
+                    isCaught = true;
+                    break;
                 }
             }
-            uncaughtBombs.push(bomb);
+            (isCaught ? caughtBombs : uncaughtBombs).push(bomb);
         }
 
         this.phase.bombs = uncaughtBombs;
